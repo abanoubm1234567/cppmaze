@@ -1,8 +1,10 @@
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 void initMaze(char* p, int size);
 void printMaze(char* p, int size);
@@ -77,8 +79,8 @@ void generateMaze(char *p, int size){
         x_pos = 2+(rand()%(size-2));
         y_pos = 2+(rand()%(size-2));
         p+=((y_pos*size)+(x_pos));
-        std::cout<<"generated x: "<<x_pos<<" y: "<<y_pos<<std::endl;
-        std::cout<<"char at p: "<<*p<<std::endl;
+        //std::cout<<"generated x: "<<x_pos<<" y: "<<y_pos<<std::endl;
+        //std::cout<<"char at p: "<<*p<<std::endl;
     }while (*(p)!='.');
     //int x = get_x_pos(start, p, size);
     //int y = get_y_pos(start, p, size);
@@ -90,48 +92,106 @@ void backtracking(char* start, char *p, int size){
     if ((*p)!='.'){
         return;
     }
-    char options[4] = {'l','r','d','u'}; //representing four directions
     *p = ' '; // represents being visited
+
+    std::vector<char> options = {};
+
+
     bool l_avail = ((get_x_pos(start, p, size)>1) && (*(get_left(p, size))=='.')); //dot means unvisited
     bool r_avail = ((get_x_pos(start, p, size)<size-2) && (*(get_right(p, size))=='.')); //dot means unvisited
     bool d_avail = ((get_y_pos(start, p, size)<size-2) && (*(get_down(p, size))=='.')); //dot means unvisited
     bool u_avail = ((get_y_pos(start, p, size)>1) && (*(get_up(p, size))=='.')); //dot means unvisited
-    //std::cout<<"x: "<<get_x_pos(start, p, size)<<"\ty: "<<get_y_pos(start, p, size)<<std::endl;
-    printMaze(start, size);
-    while( l_avail || r_avail || d_avail || u_avail ){
-        char choice = options[rand()%4];
+
+
+    if (l_avail){
+        options.push_back('l');
+    }
+    if (r_avail){
+        options.push_back('r');
+    }
+    if (d_avail){
+        options.push_back('d');
+    }
+    if (u_avail){
+        options.push_back('u');
+    }
+
+    while(1){
+        
+        l_avail = ((get_x_pos(start, p, size)>1) && (*(get_left(p, size))=='.')); //dot means unvisited
+        r_avail = ((get_x_pos(start, p, size)<size-2) && (*(get_right(p, size))=='.')); //dot means unvisited
+        d_avail = ((get_y_pos(start, p, size)<size-2) && (*(get_down(p, size))=='.')); //dot means unvisited
+        u_avail = ((get_y_pos(start, p, size)>1) && (*(get_up(p, size))=='.')); //dot means unvisited
+
+        if (!(l_avail || r_avail || d_avail || u_avail)){
+            break;
+        }
+
+        auto it = options.begin();
+        char choice = options[rand()%options.size()];
         switch (choice) {
-            case 'l':
-                if (l_avail){
-                    //std::cout<<"Going left"<<std::endl;
-                    l_avail = false;
-                    *(p-1) = ' ';
-                    backtracking(start, get_left(p, size), size);
+            case 'l': 
+                //std::cout<<"===========================================\n\nleft avail: "<<l_avail<<std::endl;
+                //std::cout<<"right avail: "<<r_avail<<std::endl;
+                //std::cout<<"down avail: "<<d_avail<<std::endl;
+                //std::cout<<"up avail: "<<u_avail<<std::endl;
+                printMaze(start, size);
+                //std::cout<<"x: "<<get_x_pos(start, p, size)<<"\ty: "<<get_y_pos(start, p, size)<<std::endl;
+                //std::cout<<"Going left"<<std::endl;
+                l_avail = false;
+                it = std::find(options.begin(), options.end(), 'l');
+                if (it != options.end()){
+                    options.erase(it);
                 }
+                *(p-1) = ' ';
+                backtracking(start, get_left(p, size), size);
                 break;
             case 'r':
-                if (r_avail){
-                    //std::cout<<"Going right"<<std::endl;
-                    r_avail = false;
-                    *(p+1) = ' ';
-                    backtracking(start, get_right(p, size), size);
+               // std::cout<<"===========================================\n\nleft avail: "<<l_avail<<std::endl;
+               // std::cout<<"right avail: "<<r_avail<<std::endl;
+               // std::cout<<"down avail: "<<d_avail<<std::endl;
+               // std::cout<<"up avail: "<<u_avail<<std::endl;
+                printMaze(start, size);
+               // std::cout<<"x: "<<get_x_pos(start, p, size)<<"\ty: "<<get_y_pos(start, p, size)<<std::endl;
+               // std::cout<<"Going right"<<std::endl;
+                r_avail = false;
+                it = std::find(options.begin(), options.end(), 'r');
+                if (it != options.end()){
+                    options.erase(it);
                 }
+                *(p+1) = ' ';
+                backtracking(start, get_right(p, size), size);
                 break;
             case 'd':
-                if (d_avail){
-                    //std::cout<<"Going down"<<std::endl;
-                    d_avail = false;
-                    *(p+size) = ' ';
-                    backtracking(start, get_down(p, size), size);
+               // std::cout<<"===========================================\n\nleft avail: "<<l_avail<<std::endl;
+               // std::cout<<"right avail: "<<r_avail<<std::endl;
+               // std::cout<<"down avail: "<<d_avail<<std::endl;
+               // std::cout<<"up avail: "<<u_avail<<std::endl;
+                printMaze(start, size);
+               // std::cout<<"x: "<<get_x_pos(start, p, size)<<"\ty: "<<get_y_pos(start, p, size)<<std::endl;
+               // std::cout<<"Going down"<<std::endl;
+                it = std::find(options.begin(), options.end(), 'd');
+                if (it != options.end()){
+                    options.erase(it);
                 }
-                break;
+                d_avail = false;
+                *(p+size) = ' ';
+                backtracking(start, get_down(p, size), size);
             case 'u':
-                if (u_avail){
-                    //std::cout<<"Going up"<<std::endl;
-                    u_avail = false;
-                    *(p-size) = ' ';
-                    backtracking(start, get_up(p, size), size);
+               // std::cout<<"===========================================\n\nleft avail: "<<l_avail<<std::endl;
+               // std::cout<<"right avail: "<<r_avail<<std::endl;
+               // std::cout<<"down avail: "<<d_avail<<std::endl;
+               // std::cout<<"up avail: "<<u_avail<<std::endl;
+                printMaze(start, size);
+               // std::cout<<"x: "<<get_x_pos(start, p, size)<<"\ty: "<<get_y_pos(start, p, size)<<std::endl;
+               // std::cout<<"Going up"<<std::endl;
+                it = std::find(options.begin(), options.end(), 'u');
+                if (it != options.end()){
+                    options.erase(it);
                 }
+                u_avail = false;
+                *(p-size) = ' ';
+                backtracking(start, get_up(p, size), size);
                 break;
         }
     }
