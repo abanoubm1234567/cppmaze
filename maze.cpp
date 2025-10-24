@@ -58,7 +58,8 @@ void initMaze(char* p, int size){
 
 void printMaze(char *p, int size){
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    std::system("clear");
+    //std::system("clear");
+    std::cout << "\033[2J\033[H";
     std::cout<<std::endl;
     for (int i = 0; i<size*size; i++) {
         std::cout<<*(p+i);
@@ -177,6 +178,7 @@ void backtracking(char* start, char *p, int size){
                 d_avail = false;
                 *(p+size) = ' ';
                 backtracking(start, get_down(p, size), size);
+                break;
             case 'u':
                // std::cout<<"===========================================\n\nleft avail: "<<l_avail<<std::endl;
                // std::cout<<"right avail: "<<r_avail<<std::endl;
