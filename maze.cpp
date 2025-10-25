@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -16,15 +17,34 @@ char* get_left(char* p, int size);
 char* get_right(char* p, int size);
 char* get_up(char* p, int size);
 char* get_down(char* p, int size);
+void solve_maze(char* p, int size);
+void solve_helper(char* p, int size);
 
-int main(){
-    unsigned int size = 51; // maze will be 51x51 
+int main(int argc, char** argv){
+    if (argc<2){
+        std::cout<<"Maze size needed as arg 1"<<std::endl;
+        return 0;
+    }
+    unsigned int size = std::stoi(argv[1]); // maze will be 51x51 
     char maze[size][size];
     srand(time(0));
     initMaze((char*)maze, size );
     printMaze((char*)maze, size);
     generateMaze((char*)maze, size);
+    
     printMaze((char*) maze, size);
+    
+    char ans;
+    std::cout<<"Want me to solve this maze? (y/n): ";
+    std::cin >> ans;
+
+    if (ans!='y'){
+        return 0;
+    }
+    
+    solve_maze((char*)maze, size);
+    printMaze((char*)maze, size);
+
     return 0;
 }
 
@@ -54,10 +74,12 @@ void initMaze(char* p, int size){
             *(p+j) = 'X';
         }
     }
+    *(p+size) = 's';                                // start
+    *(p+(size*(size-1))-1) = 'e';                   //end
 }
 
 void printMaze(char *p, int size){
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     //std::system("clear");
     std::cout << "\033[2J\033[H";
     std::cout<<std::endl;
@@ -222,4 +244,24 @@ char* get_up(char* p, int size){
 
 char* get_down(char* p, int size){
     return p+(2*size);
+}
+
+void solve_maze(char* p, int size){
+    while ((*p)!='s') {
+        p++;
+    }
+    solve_helper(p,size);
+}
+
+bool solve_helper(char* p, int size){
+    if (p)
+
+    //check right
+    
+    //check down
+    
+    //check up
+    
+    //check left
+
 }
